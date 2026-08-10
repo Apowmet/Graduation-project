@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - shop
+    # volumes - только если хочешь сохранять данные локально между перезапусками, но не обязательно
+    # volumes:
+    #   - redis-data:/data
+
+  productcatalogservice:
+    build:
+      context: ./src/productcatalogservice
+    restart: unless-stopped
+    networks:
+      - shop
+    # не требует переменных окружения
+
+  cartservice:
+    build:
+      context: ./src/cartservice/src 
+    restart: unless-stopped
+    networks:
+      - shop
+    environment:
+      REDIS_ADDR: "redis:6379"
+      # REDIS_PASSWORD можно добавить позже
+
+  frontend:
+    build:
+      context: ./src/frontend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - shop
+    environment:
+      PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+      CART_SERVICE_ADDR: "cartservice:7070"
+      CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+      SHIPPING_SERVICE_ADDR: "0.0.0.0:0"
+      CHECKOUT_SERVICE_ADDR: "0.0.0.0:0"
+      RECOMMENDATION_SERVICE_ADDR: "0.0.0.0:0"
+      AD_SERVICE_ADDR: "0.0.0.0:0"
+      PAYMENT_SERVICE_ADDR: "0.0.0.0:0"
+      EMAIL_SERVICE_ADDR: "0.0.0.0:0"
+      SHOPPING_ASSISTANT_SERVICE_ADDR: "0.0.0.0:0"
+  currencyservice:
+    build:
+      context: ./src/currencyservice
+    restart: unless-stopped
+    networks:
+      - shop
+    environment:
+      PORT: "7000"
+      DISABLE_PROFILER: "1"   # именно эту переменную проверяет код
+
+networks:
+  shop:
+    driver: bridge
