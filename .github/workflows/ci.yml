@@ -11,6 +11,9 @@ jobs:
       contents: read
       packages: write
 
+    env:
+      OWNER_LOWERCASE: ${{ github.repository_owner }}
+
     strategy:
       matrix:
         service:
@@ -31,6 +34,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Convert owner to lowercase
+        id: lower
+        run: |
+          echo "owner_lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -45,5 +53,5 @@ jobs:
           file: ${{ matrix.service.dockerfile }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.service.name }}:latest
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.service.name }}:${{ github.sha }}
+            ghcr.io/${{ steps.lower.outputs.owner_lc }}/${{ matrix.service.name }}:latest
+            ghcr.io/${{ steps.lower.outputs.owner_lc }}/${{ matrix.service.name }}:${{ github.sha }}
