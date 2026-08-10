@@ -10,6 +10,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
+      actions: read
 
     strategy:
       matrix:
@@ -21,8 +23,8 @@ jobs:
             context: ./src/productcatalogservice
             dockerfile: ./src/productcatalogservice/Dockerfile
           - name: cartservice
-            context: ./src/cartservice/src               # <-- контекст теперь сама папка src
-            dockerfile: ./src/cartservice/src/Dockerfile  # <-- путь к Dockerfile внутри неё
+            context: ./src/cartservice/src
+            dockerfile: ./src/cartservice/src/Dockerfile
           - name: currencyservice
             context: ./src/currencyservice
             dockerfile: ./src/currencyservice/Dockerfile
@@ -37,14 +39,14 @@ jobs:
           echo "owner_lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4   # обновлено до v4 (Node 24)
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6   # обновлено до v6 (Node 24)
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.service.context }}
           file: ${{ matrix.service.dockerfile }}
@@ -52,3 +54,23 @@ jobs:
           tags: |
             ghcr.io/${{ steps.lower.outputs.owner_lc }}/${{ matrix.service.name }}:latest
             ghcr.io/${{ steps.lower.outputs.owner_lc }}/${{ matrix.service.name }}:${{ github.sha }}
+
+      - name: Scan image with Trivy (table output for logs)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ steps.lower.outputs.owner_lc }}/${{ matrix.service.name }}:${{ github.sha }}
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Trivy scan (SARIF output for GitHub Security)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ steps.lower.outputs.owner_lc }}/${{ matrix.service.name }}:${{ github.sha }}
+          format: 'sarif'
+          output: trivy-results-${{ matrix.service.name }}.sarif
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results-${{ matrix.service.name }}.sarif
