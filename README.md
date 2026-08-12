@@ -2,7 +2,7 @@
 
 Полный цикл DevOps для интернет-магазина на базе микросервисов GoogleCloudPlatform/microservices-demo. Проект охватывает контейнеризацию, CI/CD, облачную инфраструктуру (GCP), безопасность секретов, оркестрацию Kubernetes и мониторинг.
 
-
+<img width="1507" height="1005" alt="{20C0917F-4B2C-4595-B349-2EDEF9962A42}" src="https://github.com/user-attachments/assets/a2a55ec5-4329-4ffc-8508-579368318919" />
 
 ## Содержание
 - [Цель](#-цель)
@@ -75,7 +75,7 @@
 
 ### Шаг 6. Мониторинг и логирование
 - Установлена **Grafana** с доступом через LoadBalancer.
-- Настроен **Loki** как Data Source (Prometheus и Promtail не совместимы с Autopilot в trial).
+- Настроен **Loki** как Data Source (Prometheus и Promtail не совместимы с Autopilot в trial, нужно испльзовать Fluent Bit).
 - Логи контейнеров доступны через `kubectl logs` и Grafana Explore.
 
 ## Ограничения и решения
