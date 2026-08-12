@@ -2,7 +2,7 @@
 
 Полный цикл DevOps для интернет-магазина на базе микросервисов GoogleCloudPlatform/microservices-demo. Проект охватывает контейнеризацию, CI/CD, облачную инфраструктуру (GCP), безопасность секретов, оркестрацию Kubernetes и мониторинг.
 
-<img width="1507" height="1005" alt="{20C0917F-4B2C-4595-B349-2EDEF9962A42}" src="https://github.com/user-attachments/assets/a2a55ec5-4329-4ffc-8508-579368318919" />
+<img width="1513" height="991" alt="{F26DC40A-0306-4C9A-8CBB-11460091422F}" src="https://github.com/user-attachments/assets/3f77e468-0a46-4285-9021-1e2cd4dab1a3" />
 
 ## Содержание
 - [Цель](#-цель)
