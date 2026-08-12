@@ -85,6 +85,7 @@
 | GKE Autopilot запрещает DaemonSet + hostPath| Использование `kubectl logs` и отказ от Promtail (логи доступны в Grafana через Loki API)   |
 | Кнопка "Edit Quota" неактивна в trial версии      | Ограничение, которое никак не изменить; в платном варианте не актуально                         |
 | Grafana и Loki       | Установлены, но поды находятся в ожидании ресурсов                        |
+| Сервисы productcatalogservice и cartservice отключены      | Нехватка ресурсов в Trial-аккаунте                        |
 
 
 
